@@ -1,115 +1,190 @@
-// Wait for DOM to load
+let currentScreen = 'mainScreen';
+let logoAnimationPlayed = false;
+
+// Initialize the website
 document.addEventListener('DOMContentLoaded', function() {
-    const logoVideo = document.getElementById('logoVideo');
+    const logoAnimation = document.getElementById('logoAnimation');
     const logoAnimationScreen = document.getElementById('logoAnimationScreen');
-    const mainScreen = document.getElementById('mainScreen');
-    const clickSound = document.getElementById('clickSound');
-    const mainButtons = document.querySelectorAll('.main-button');
-    const topLogos = document.querySelectorAll('.top-logo');
+    const mainContainer = document.getElementById('mainContainer');
+    const masterLogo = document.getElementById('masterLogo');
     
-    let videoPlayed = false;
-    
-    // Function to show main screen
-    function showMainScreen() {
-        if (!videoPlayed) {
-            videoPlayed = true;
-            logoAnimationScreen.classList.remove('active');
-            mainScreen.classList.add('active');
-            topLogos.forEach(logo => logo.classList.add('visible'));
-        }
-    }
-    
-    // Video ended event
-    logoVideo.addEventListener('ended', showMainScreen);
-    
-    // Auto-start after 5 seconds if video doesn't load or play
-    setTimeout(showMainScreen, 5000);
-    
-    // Fallback: if video fails to load
-    logoVideo.addEventListener('error', function() {
-        setTimeout(showMainScreen, 1000);
-    });
-    
-    // Main buttons click event
-    mainButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            playClickSound();
+    // Play logo animation for 5 seconds
+    logoAnimation.addEventListener('loadeddata', function() {
+        setTimeout(() => {
+            logoAnimationScreen.style.display = 'none';
+            mainContainer.classList.remove('hidden');
             
-            const targetScreen = this.getAttribute('data-screen');
-            
+            // Show master logo after main animation
             setTimeout(() => {
-                mainScreen.classList.remove('active');
-                document.getElementById(targetScreen).classList.add('active');
-                window.scrollTo(0, 0);
+                masterLogo.classList.remove('hidden');
             }, 100);
-        });
+            
+            logoAnimationPlayed = true;
+        }, 5000);
     });
     
-    // Play click sound
-    function playClickSound() {
-        clickSound.currentTime = 0;
-        clickSound.play().catch(e => console.log('Audio play failed:', e));
-    }
-    
-    // Add click sound to all buttons
-    document.querySelectorAll('button').forEach(btn => {
-        btn.addEventListener('click', playClickSound);
-    });
+    // Fallback if video doesn't load
+    setTimeout(() => {
+        if (!logoAnimationPlayed) {
+            logoAnimationScreen.style.display = 'none';
+            mainContainer.classList.remove('hidden');
+            masterLogo.classList.remove('hidden');
+            logoAnimationPlayed = true;
+        }
+    }, 6000);
 });
 
-// Back button function
-function goBack(currentScreen) {
-    const current = document.getElementById(currentScreen);
-    const mainScreen = document.getElementById('mainScreen');
+// Navigation function
+function navigateToScreen(targetScreen) {
+    if (targetScreen === currentScreen) return;
     
-    current.classList.remove('active');
-    mainScreen.classList.add('active');
-    window.scrollTo(0, 0);
+    // Play click sound
+    playClickSound();
+    
+    if (targetScreen !== 'mainScreen') {
+        // Show transition animation for 3 seconds
+        showTransitionAnimation(() => {
+            switchToScreen(targetScreen);
+        });
+    } else {
+        switchToScreen(targetScreen);
+    }
+}
+
+// Switch screen function
+function switchToScreen(targetScreen) {
+    const currentScreenElement = document.getElementById(currentScreen);
+    const targetScreenElement = document.getElementById(targetScreen);
+    
+    // Remove active class from current screen
+    currentScreenElement.classList.remove('active');
+    
+    // Add active class to target screen
+    setTimeout(() => {
+        targetScreenElement.classList.add('active');
+    }, 100);
+    
+    currentScreen = targetScreen;
+}
+
+// Show transition animation
+function showTransitionAnimation(callback) {
+    const transitionScreen = document.getElementById('transitionScreen');
+    const transitionAnimation = document.getElementById('transitionAnimation');
+    
+    transitionScreen.classList.remove('hidden');
+    transitionAnimation.currentTime = 0;
+    transitionAnimation.play();
+    
+    setTimeout(() => {
+        transitionScreen.classList.add('hidden');
+        transitionAnimation.pause();
+        callback();
+    }, 3000);
+}
+
+// Play click sound (simulated with Web Audio API)
+function playClickSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+        
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.1);
+    } catch (error) {
+        console.log('Audio context not supported');
+    }
+    
+    // Button wave effect
+    const buttons = document.querySelectorAll('.main-btn, .copy-btn, .back-btn');
+    buttons.forEach(button => {
+        button.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            button.style.transform = '';
+        }, 150);
+    });
 }
 
 // Copy code function
 function copyCode() {
     const codeBox = document.getElementById('codeBox');
-    const codeText = codeBox.innerText;
-    const copyButton = document.querySelector('.copy-button');
+    const codeText = codeBox.querySelector('code').textContent;
     
     // Create temporary textarea
-    const textarea = document.createElement('textarea');
-    textarea.value = codeText;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
+    const tempTextarea = document.createElement('textarea');
+    tempTextarea.value = codeText;
+    document.body.appendChild(tempTextarea);
     
-    // Select and copy
-    textarea.select();
-    textarea.setSelectionRange(0, 99999); // For mobile devices
+    // Select and copy text
+    tempTextarea.select();
+    tempTextarea.setSelectionRange(0, 99999); // For mobile devices
     
     try {
         document.execCommand('copy');
-        copyButton.textContent = 'Copied!';
-        copyButton.classList.add('copied');
+        
+        // Show feedback
+        const copyBtn = document.querySelector('.copy-btn');
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = 'Copied!';
+        copyBtn.style.background = 'linear-gradient(45deg, #00ff00, #008000)';
         
         setTimeout(() => {
-            copyButton.textContent = 'Copy';
-            copyButton.classList.remove('copied');
+            copyBtn.textContent = originalText;
+            copyBtn.style.background = '';
         }, 2000);
+        
     } catch (err) {
-        console.error('Failed to copy:', err);
-        alert('Failed to copy code');
+        console.error('Failed to copy code:', err);
+        
+        // Fallback for newer browsers
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(codeText).then(() => {
+                const copyBtn = document.querySelector('.copy-btn');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                copyBtn.style.background = 'linear-gradient(45deg, #00ff00, #008000)';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = '';
+                }, 2000);
+            });
+        }
     }
     
-    document.body.removeChild(textarea);
+    // Remove temporary textarea
+    document.body.removeChild(tempTextarea);
+    
+    // Play click sound
+    playClickSound();
 }
 
-// Prevent context menu on long press (mobile)
-document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-});
+// Add touch support for mobile
+document.addEventListener('touchstart', function() {}, {passive: true});
 
-// Disable text selection on buttons
-document.querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('selectstart', function(e) {
-        e.preventDefault();
-    });
+// Prevent zoom on double tap
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function (event) {
+    const now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+
+// Handle orientation change
+window.addEventListener('orientationchange', function() {
+    setTimeout(function() {
+        window.scrollTo(0, 0);
+    }, 100);
 });
