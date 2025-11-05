@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arduino Accident Alert System - Mr Master</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Logo Animation Screen -->
+    <div id="logoAnimationScreen" class="screen active">
+        <video id="logoVideo" autoplay muted playsinline>
+            <source src="logoanimation.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- Main Screen -->
+    <div id="mainScreen" class="screen">
+        <img src="master1.png" alt="Logo" class="top-logo" id="topLogo">
+        <div class="button-container">
+            <button class="main-button" data-screen="codeScreen">
+                <span>Code</span>
+            </button>
+            <button class="main-button" data-screen="diagramScreen">
+                <span>Diagram</span>
+            </button>
+            <button class="main-button" data-screen="infoScreen">
+                <span>Project Info</span>
+            </button>
+        </div>
+        <div class="footer">Created by ©Mr Master</div>
+    </div>
+
+    <!-- Code Screen -->
+    <div id="codeScreen" class="screen">
+        <img src="master1.png" alt="Logo" class="top-logo">
+        <button class="back-button" onclick="goBack('codeScreen')">
+            <span>←</span>
+        </button>
+        <div class="content-container">
+            <div class="code-box-wrapper">
+                <div class="code-box-header">Full Code</div>
+                <div class="code-box" id="codeBox">
+<pre>#include&lt;SoftwareSerial.h&gt;
+
+SoftwareSerial Serial1(2,3); //make RX arduino line is pin 2, make TX arduino line is pin 3.
+
+SoftwareSerial gps(10,11);
+
+#include&lt;LiquidCrystal.h&gt;
+
+LiquidCrystal lcd(4,5,6,7,8,9);
+
+#define x A1
+#define y A2
+#define z A3
+
+int xsample=0;
+int ysample=0;
+int zsample=0;
+
+#define samples 10
+
+#define minVal -50
+#define MaxVal 50
+
+int i=0,k=0;
+int  gps_status=0;
+float latitude=0; 
+float logitude=0;                       
+String Speed="";
+String gpsString="";
+char *test="$GPRMC";
+
+void initModule(String cmd, char *res, int t)
+{
+  while(1)
+  {
+    Serial.println(cmd);
+    Serial1.println(cmd);
+    delay(100);
+    while(Serial1.available()>0)
+    {
+       if(Serial1.find(res))
+       {
+        Serial.println(res);
+        delay(t);
+        return;
+       }
+
+       else
+       {
+        Serial.println("Error");
+       }
+    }
+    delay(t);
+  }
+}
+
+void setup() 
+{
+  Serial1.begin(9600);
+  Serial.begin(9600);
+  lcd.begin(16,2);  
+  lcd.print("Accident Alert  ");
+
+  lcd.setCursor(0,0);
+  lcd.print("     System     ");
+  delay(2000);
+  lcd.clear();
+  lcd.print("Initializing");
+  lcd.setCursor(0,1);
+  lcd.print("Please Wait...");
+  delay(1000);
+  
+  Serial.println("Initializing....");
+  initModule("AT","OK",1000);
+  initModule("ATE1","OK",1000);
+  initModule("AT+CPIN?","READY",1000);  
+  initModule("AT+CMGF=1","OK",1000);     
+  initModule("AT+CNMI=2,2,0,0,0","OK",1000);  
+  Serial.println("Initialized Successfully");
+  lcd.clear();
+  lcd.print("Initialized");
+  lcd.setCursor(0,0);
+  lcd.print("Successfully");
+  delay(2000);
+  lcd.clear();
+  lcd.print("Callibrating ");
+  lcd.setCursor(0,1);
+  lcd.print("Acceleromiter");
+  for(int i=0;i<samples;i++)
+  {
+    xsample+=analogRead(x);
+    ysample+=analogRead(y);
+    zsample+=analogRead(z);
+  }
+
+  xsample/=samples;
+  ysample/=samples;
+  zsample/=samples;
+
+  Serial.println(xsample);
+  Serial.println(ysample);
+  Serial.println(zsample);
+  delay(1000);
+  
+  lcd.clear();
+  lcd.print("Waiting For GPS");
+  lcd.setCursor(0,1);
+  lcd.print("     Signal    ");
+  delay(2000);
+  gps.begin(9600);
+  get_gps();
+  show_coordinate();
+  delay(2000);
+  lcd.clear();
+  lcd.print("GPS is Ready");
+  delay(1000);
+  lcd.clear();
+  lcd.print("System Ready");
+  Serial.println("System Ready..");
+}
+
+void loop() 
+{
+    int value1=analogRead(x);
+    int value2=analogRead(y);
+    int value3=analogRead(z);
+
+    int xValue=xsample-value1;
+    int yValue=ysample-value2;
+    int zValue=zsample-value3;
+    
+    Serial.print("x=");
+    Serial.println(xValue);
+    Serial.print("y=");
+    Serial.println(yValue);
+    Serial.print("z=");
+    Serial.println(zValue);
+
+    if(xValue < minVal || xValue > MaxVal  || yValue < minVal || yValue > MaxVal  || zValue < minVal || zValue > MaxVal)
+    {
+      get_gps();
+      show_coordinate();
+      lcd.clear();
+      lcd.print("Sending SMS");
+      Serial.println("Sending SMS");
+      Send();
+      Serial.println("SMS Sent");
+      delay(2000);
+      lcd.clear();
+      lcd.print("System Ready");
+    }       
+}
+
+void gpsEvent()
+{
+  gpsString="";
+  while(1)
+  {
+   while (gps.available()>0)            //Serial incoming data from GPS
+   {
+    char inChar = (char)gps.read();
+     gpsString+= inChar;                    //store incoming data from GPS to temparary string str[]
+     i++;
+    // Serial.print(inChar);
+     if (i < 7)                      
+     {
+      if(gpsString[i-1] != test[i-1])         //check for right string
+      {
+        i=0;
+        gpsString="";
+      }
+     }
+    if(inChar=='
+')
+    {
+     if(i>60)
+     {
+       gps_status=1;
+       break;
+     }
+     else
+     {
+       i=0;
+     }
+    }
+  }
+   if(gps_status)
+    break;
+  }
+}
+
+void get_gps()
+{
+  lcd.clear();
+  lcd.print("Getting GPS Data");
+  lcd.setCursor(0,1);
+  lcd.print("Please Wait.....");
+   gps_status=0;
+   int x=0;
+   while(gps_status==0)
+   {
+    gpsEvent();
+    int str_lenth=i;
+    coordinate2dec();
+    i=0;x=0;
+    str_lenth=0;
+   }
+}
+
+void show_coordinate()
+{
+    lcd.clear();
+    lcd.print("Lat:");
+    lcd.print(latitude);
+    lcd.setCursor(0,1);
+    lcd.print("Log:");
+    lcd.print(logitude);
+    Serial.print("Latitude:");
+    Serial.println(latitude);
+    Serial.print("Longitude:");
+    Serial.println(logitude);
+    Serial.print("Speed(in knots)=");
+    Serial.println(Speed);
+    delay(2000);
+    lcd.clear();
+    lcd.print("Speed(Knots):");
+    lcd.setCursor(0,1);
+    lcd.print(Speed);
+}
+
+void coordinate2dec()
+{
+  String lat_degree="";
+    for(i=20;i<=21;i++)         
+      lat_degree+=gpsString[i];
+      
+  String lat_minut="";
+     for(i=22;i<=28;i++)         
+      lat_minut+=gpsString[i];
+
+  String log_degree="";
+    for(i=32;i<=34;i++)
+      log_degree+=gpsString[i];
+
+  String log_minut="";
+    for(i=35;i<=41;i++)
+      log_minut+=gpsString[i];
+    
+    Speed="";
+    for(i=45;i<48;i++)          //extract longitude from string
+      Speed+=gpsString[i];
+      
+     float minut= lat_minut.toFloat();
+     minut=minut/60;
+     float degree=lat_degree.toFloat();
+     latitude=degree+minut;
+     
+     minut= log_minut.toFloat();
+     minut=minut/60;
+     degree=log_degree.toFloat();
+     logitude=degree+minut;
+}
+
+void Send()
+{ 
+   Serial1.println("AT");
+   delay(500);
+   serialPrint();
+   Serial1.println("AT+CMGF=1");
+   delay(500);
+   serialPrint();
+   Serial1.print("AT+CMGS=");
+   Serial1.print('"');
+   Serial1.print("Enter your mobile nomber");//rough firstly
+   Serial1.println('"');
+   delay(500);
+   serialPrint();
+   Serial1.print("Latitude:");
+   Serial1.println(latitude);
+   delay(500);
+   serialPrint();
+   Serial1.print(" longitude:");
+   Serial1.println(logitude);
+   delay(500);
+   serialPrint();
+   Serial1.print(" Speed:");
+   Serial1.print(Speed);
+   Serial1.println("Knots");
+   delay(500);
+   serialPrint();
+   Serial1.print("https://maps.app.goo.gl/9rUqTGt4GLdcr1aM6");
+   Serial1.print(latitude,6);
+   Serial1.print("+");      //18.490866,73.843418
+   Serial1.print(logitude,6);
+   Serial1.write(26);
+   delay(2000);
+   serialPrint();
+}
+
+void serialPrint()
+{
+  while(Serial1.available()>0)
+  {
+    Serial.print(Serial1.read());
+  }
+}</pre>
+                </div>
+                <button class="copy-button" onclick="copyCode()">Copy</button>
+            </div>
+        </div>
+        <div class="footer">Created by ©Mr Master</div>
+    </div>
+
+    <!-- Diagram Screen -->
+    <div id="diagramScreen" class="screen">
+        <img src="master1.png" alt="Logo" class="top-logo">
+        <button class="back-button" onclick="goBack('diagramScreen')">
+            <span>←</span>
+        </button>
+        <div class="content-container">
+            <h2 class="page-title">Diagram</h2>
+            <div class="diagram-container">
+                <img src="diagram.png" alt="Circuit Diagram" class="diagram-image">
+            </div>
+        </div>
+        <div class="footer">Created by ©Mr Master</div>
+    </div>
+
+    <!-- Project Info Screen -->
+    <div id="infoScreen" class="screen">
+        <img src="master1.png" alt="Logo" class="top-logo">
+        <button class="back-button" onclick="goBack('infoScreen')">
+            <span>←</span>
+        </button>
+        <div class="content-container info-content">
+            <div class="info-text">
+                <p>Welcome to Mr Master.</p>
+                <p>Hello friends, in this project we are going to make an Arduino based vehicle accident alert system using Arduino Uno, GPS Module, GSM and ADXL are the main components of the project. ADXL detects real time changes in vehicle axis and GSM module sends alert message to your mobile with location of vehicle accident. When you save the ambulance number in the program, the ambulance will arrive at the accident location, the vehicle accident location is sent as a google map link created from the latitude and longitude from the GPS module and the 16*2 LCD display shows the current information of the project and the arduino uno controls the complete system. the main purpose of the project is that after the accident, the life of the passengers should be saved as soon as possible. If you like this project please then be sure to LIKE, SUBSCRIBE for more videos and SHARE my video and support my CHANNEL.</p>
+            </div>
+            <div class="mobile-number-section">
+                <h3>add MOBILE NUMBER in Program</h3>
+                <img src="screenshot.png" alt="Mobile Number Screenshot" class="screenshot-image">
+            </div>
+        </div>
+        <div class="footer">Created by ©Mr Master</div>
+    </div>
+
+    <!-- Click Sound -->
+    <audio id="clickSound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIGWm98OScTgwOT6fk77RiGwU7k9n0yHYpBSh+zPLaizsKElyx6+mmUxELSKHh8bllHAU2jdXzzn0vBSV6y/HajDsIFGS56+mjUBANUarm8LJfGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGgU+lt31xHInBSl/zfDajDsIE2S56+mjUBANUanm8LJeGg==" type="audio/wav">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
