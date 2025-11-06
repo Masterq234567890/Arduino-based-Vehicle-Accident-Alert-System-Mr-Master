@@ -68,32 +68,54 @@ body {
 }
 
 /* Master Logo */
+/* Master Logo */
 .master-logo {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: 2px solid;
-    border-image: linear-gradient(45deg, #ff0080, #00ffff, #80ff00, #ff8000) 1;
-    padding: 5px;
-    animation: logoColorChange 3s ease-in-out infinite;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+
+  /* size जसे आहे तसेच ठेवा */
+  width: 60px;
+  height: 60px;
+
+  /* circular wrapper */
+  border-radius: 50%;
+  padding: 5px;
+  /* border-image काढून pseudo-element द्वारे circular gradient border */
+  border: 2px solid transparent;
+  position: fixed;
 }
 
+/* प्रत्यक्ष image circular */
 .master-logo img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
+/* circular gradient outline (old border-image ची जागा) */
+.master-logo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  padding: 2px;              /* border thickness */
+  background: linear-gradient(45deg, #ff0080, #00ffff, #00ff00, #ff8000);
+  -webkit-mask: 
+    radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+  mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 0);
+  pointer-events: none;
+}
+
+/* जर outline ला color-animate करायचे असेल तर */
 @keyframes logoColorChange {
-    0%, 100% { border-image: linear-gradient(45deg, #ff0080, #00ffff) 1; }
-    25% { border-image: linear-gradient(45deg, #00ffff, #80ff00) 1; }
-    50% { border-image: linear-gradient(45deg, #80ff00, #ff8000) 1; }
-    75% { border-image: linear-gradient(45deg, #ff8000, #ff0080) 1; }
+  0%, 100% { filter: hue-rotate(0deg); }
+  50%      { filter: hue-rotate(180deg); }
+}
+.master-logo::after {
+  animation: logoColorChange 3s ease-in-out infinite;
 }
 
 /* Screen Management */
