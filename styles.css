@@ -136,8 +136,8 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    gap: 30px;
+    height: 10000vh;
+    gap: 3000px;
 }
 
 /* Main Buttons */
