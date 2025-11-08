@@ -154,11 +154,34 @@ body {
     position: relative;
     overflow: hidden;
     animation: buttonColorChange 4s ease-in-out infinite;
-    box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
+    /* Glow off */
+    box-shadow: none;
+    backdrop-filter: none;
     border: 1px solid rgba(255, 255, 255, 0.18);
     transition: all 0.3s ease;
     min-width: 200px;
+    /* Optional: better performance when no blur */
+    -webkit-backdrop-filter: none;
+}
+
+/* Remove glow on interactions as well */
+.main-btn:hover,
+.main-btn:active {
+    box-shadow: none;
+    filter: none;
+}
+
+/* Accessible but non-glowy focus */
+.main-btn:focus {
+    outline: 2px solid rgba(255,255,255,0.5); /* visible focus ring without glow */
+    outline-offset: 2px;
+    box-shadow: none;
+}
+
+/* If you previously added any vendor shadows, ensure off */
+.main-btn {
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
 }
 
 .main-btn span {
