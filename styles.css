@@ -136,13 +136,20 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 10000vh;
-    gap: 3000px;
+    height: 100vh;
+    gap: 30px;
 }
 
 /* Main Buttons */
 .main-btn {
-    background: linear-gradient(45deg, #ff0080, #00ffff, #80ff00, #ff8000);
+    /* Only blue-family colors */
+    background: linear-gradient(
+        45deg,
+        #2c67f2,    /* royal/deep blue */
+        #6a11cb,    /* indigo-purple */
+        #62cff4,    /* sky blue */
+        #4facfe     /* light sky/blue */
+    );
     background-size: 400% 400%;
     border: none;
     padding: 20px 40px;
@@ -154,34 +161,27 @@ body {
     position: relative;
     overflow: hidden;
     animation: buttonColorChange 4s ease-in-out infinite;
-    /* Glow off */
+    /* Glow OFF */
     box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
     backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     border: 1px solid rgba(255, 255, 255, 0.18);
     transition: all 0.3s ease;
     min-width: 200px;
-    /* Optional: better performance when no blur */
-    -webkit-backdrop-filter: none;
 }
 
-/* Remove glow on interactions as well */
 .main-btn:hover,
 .main-btn:active {
     box-shadow: none;
     filter: none;
 }
 
-/* Accessible but non-glowy focus */
 .main-btn:focus {
-    outline: 2px solid rgba(255,255,255,0.5); /* visible focus ring without glow */
+    outline: 2px solid rgba(255,255,255,0.5);
     outline-offset: 2px;
     box-shadow: none;
-}
-
-/* If you previously added any vendor shadows, ensure off */
-.main-btn {
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
 }
 
 .main-btn span {
