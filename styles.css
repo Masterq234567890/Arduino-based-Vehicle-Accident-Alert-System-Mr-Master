@@ -142,14 +142,7 @@ body {
 
 /* Main Buttons */
 .main-btn {
-    /* Only blue-family colors */
-    background: linear-gradient(
-        45deg,
-        #2c67f2,    /* royal/deep blue */
-        #6a11cb,    /* indigo-purple */
-        #62cff4,    /* sky blue */
-        #4facfe     /* light sky/blue */
-    );
+    background: linear-gradient(45deg, #ff0080, #00ffff, #80ff00, #ff8000);
     background-size: 400% 400%;
     border: none;
     padding: 20px 40px;
@@ -161,27 +154,11 @@ body {
     position: relative;
     overflow: hidden;
     animation: buttonColorChange 4s ease-in-out infinite;
-    /* Glow OFF */
-    box-shadow: none;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    box-shadow: 0 8px 32px rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.18);
     transition: all 0.3s ease;
     min-width: 200px;
-}
-
-.main-btn:hover,
-.main-btn:active {
-    box-shadow: none;
-    filter: none;
-}
-
-.main-btn:focus {
-    outline: 2px solid rgba(255,255,255,0.5);
-    outline-offset: 2px;
-    box-shadow: none;
 }
 
 .main-btn span {
