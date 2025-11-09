@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
             masterLogo.classList.remove('hidden');
             logoAnimationPlayed = true;
         }
-    }, 1000);
+    }, 6000);
 });
 
 // Navigation function
@@ -80,7 +80,7 @@ function showTransitionAnimation(callback) {
         transitionScreen.classList.add('hidden');
         transitionAnimation.pause();
         callback();
-    }, 3000);
+    }, 1000);
 }
 
 // Play click sound (simulated with Web Audio API)
