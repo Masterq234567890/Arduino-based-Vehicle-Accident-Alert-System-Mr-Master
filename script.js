@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
             masterLogo.classList.remove('hidden');
             logoAnimationPlayed = true;
         }
-    }, 3000);
+    }, 1000);
 });
 
 // Navigation function
