@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 100);
             
             logoAnimationPlayed = true;
-        }, 5000);
+        }, 4000);
     });
     
     // Fallback if video doesn't load
