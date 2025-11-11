@@ -114,6 +114,8 @@ function playClickSound() {
         }, 150);
     });
 }
+// Open Contact Modal when logo is clicked 
+function openContactModal() { const modal = document.getElementById('contactModal'); modal.classList.add('active'); document.body.style.overflow = 'hidden'; // Prevent scrolling } // Close Contact Modal function closeContactModal() { const modal = document.getElementById('contactModal'); modal.classList.remove('active'); document.body.style.overflow = 'auto'; // Re-enable scrolling } // Add click event to logo document.addEventListener('DOMContentLoaded', function() { const logo = document.querySelector('img[src*="master1.png"]'); if (logo) { logo.style.cursor = 'pointer'; logo.addEventListener('click', openContactModal); } }); // Close modal when clicking outside content area document.getElementById('contactModal').addEventListener('click', function(e) { if (e.target === this) { closeContactModal(); } });
 
 // Copy code function
 function copyCode() {
