@@ -488,3 +488,16 @@ body {
         font-size: 0.6rem;
     }
                                 }
+.bg-image {
+    position: fixed;       
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("bck.png");
+    background-size: cover;
+    background-position: center;
+    opacity: 0.15;
+    z-index: -1;
+}
+
