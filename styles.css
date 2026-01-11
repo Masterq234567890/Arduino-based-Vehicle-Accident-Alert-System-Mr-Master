@@ -502,4 +502,10 @@ body {
     pointer-events: none;
 }
 
+.logo-animation-screen,
+.main-container,
+.screen,
+.animated-background {
+    background: transparent !important;
+}
 
