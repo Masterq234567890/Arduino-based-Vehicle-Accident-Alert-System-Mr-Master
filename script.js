@@ -187,3 +187,9 @@ window.addEventListener('orientationchange', function() {
         window.scrollTo(0, 0);
     }, 100);
 });
+const masterLogo = document.querySelector(".master-logo");
+const masterSidebar = document.getElementById("masterSidebar");
+
+masterLogo.addEventListener("click", () => {
+    masterSidebar.classList.toggle("active");
+});
