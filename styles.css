@@ -512,4 +512,46 @@ body {
 .animated-background {
     background: transparent !important;
 }
+.master-sidebar {
+    position: fixed;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(10px);
+    z-index: 9999;
+
+    border-right: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 25px rgba(255,255,255,0.8);
+
+    transition: left 0.6s cubic-bezier(0.25, 0.8, 0.4, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.master-sidebar.active {
+    left: 0;
+}
+
+.sidebar-content {
+    text-align: center;
+}
+
+.sidebar-content h1 {
+    font-size: 2.5rem;
+    color: white;
+    font-weight: 800;
+    text-shadow: 0 0 10px white, 0 0 20px white;
+    margin-bottom: 20px;
+}
+
+.sidebar-content p {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.8);
+    text-shadow: 0 0 5px white;
+    letter-spacing: 1px;
+    }
+    
 
