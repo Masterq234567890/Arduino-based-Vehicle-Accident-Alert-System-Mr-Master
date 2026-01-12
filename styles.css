@@ -319,7 +319,7 @@ body {
     display: block;      /* removes bottom gap */
     border-radius: 15px; /* same as box */
     object-fit: cover;
-    opacity: 1;          /* crystal clear */
+    opacity: 0.80;          /* crystal clear */
 }
 /* Info Container */
 .info-container {
