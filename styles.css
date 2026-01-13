@@ -320,7 +320,7 @@ body {
     display: block;      /* removes bottom gap */
     border-radius: 15px; /* same as box */
     object-fit: cover;
-    opacity: 0.80;          /* crystal clear */
+    opacity: 0.90;          /* crystal clear */
 }
 /* Info Container */
 .info-container {
@@ -383,7 +383,7 @@ body {
     border-radius: 10px;
     border: 2px solid #00ffff;
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-    opacity: 0.80;
+    opacity: 0.90;
 }
 
 /* Footer */
@@ -528,7 +528,7 @@ body {
 
     transition: left 0.6s cubic-bezier(0.25, 0.8, 0.4, 1);
     display: flex;
-    justify-content: center top;
+    justify-content: top;
     align-items: top;
 }
 
@@ -538,6 +538,7 @@ body {
 
 .sidebar-content {
     text-align: center;
+    margin-top: 60px;
 }
 
 .sidebar-content h1 {
