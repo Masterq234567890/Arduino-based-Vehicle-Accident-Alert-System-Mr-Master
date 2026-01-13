@@ -80,7 +80,7 @@ function showTransitionAnimation(callback) {
         transitionScreen.classList.add('hidden');
         transitionAnimation.pause();
         callback();
-    }, 1000);
+    }, 000);
 }
 
 // Play click sound (simulated with Web Audio API)
