@@ -62,7 +62,7 @@ function switchToScreen(targetScreen) {
     // Add active class to target screen
     setTimeout(() => {
         targetScreenElement.classList.add('active');
-    }, 100);
+    }, 00);
     
     currentScreen = targetScreen;
 }
@@ -80,7 +80,7 @@ function showTransitionAnimation(callback) {
         transitionScreen.classList.add('hidden');
         transitionAnimation.pause();
         callback();
-    }, 1000);
+    }, 000);
 }
 
 // Play click sound (simulated with Web Audio API)
