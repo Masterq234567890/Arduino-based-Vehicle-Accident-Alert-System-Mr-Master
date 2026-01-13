@@ -528,8 +528,8 @@ body {
 
     transition: left 0.6s cubic-bezier(0.25, 0.8, 0.4, 1);
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: top;
+    align-items: top;
 }
 
 .master-sidebar.active {
