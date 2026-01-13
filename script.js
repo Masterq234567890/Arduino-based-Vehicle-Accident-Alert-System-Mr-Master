@@ -189,7 +189,16 @@ window.addEventListener('orientationchange', function() {
 });
 const masterLogo = document.getElementById("masterLogo");
 const masterSidebar = document.getElementById("masterSidebar");
+const sidebarOverlay = document.getElementById("sidebarOverlay");
 
+// Open / close sidebar on logo click
 masterLogo.addEventListener("click", function () {
     masterSidebar.classList.toggle("active");
+    sidebarOverlay.classList.toggle("active");
+});
+
+// Close sidebar when clicking outside (overlay)
+sidebarOverlay.addEventListener("click", function () {
+    masterSidebar.classList.remove("active");
+    sidebarOverlay.classList.remove("active");
 });
