@@ -40,7 +40,16 @@ function navigateToScreen(targetScreen) {
     
     // Play click sound
     playClickSound();
+    if (targetScreen !== 'mainScreen') {
+        // Show transition animation for 3 seconds
+        showTransitionAnimation(() => {
+            switchToScreen(targetScreen);
+        });
+    } else {
+        switchToScreen(targetScreen);
+    }
 }
+
 
 // Switch screen function
 function switchToScreen(targetScreen) {
