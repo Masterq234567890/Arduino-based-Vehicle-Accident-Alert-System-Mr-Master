@@ -40,15 +40,6 @@ function navigateToScreen(targetScreen) {
     
     // Play click sound
     playClickSound();
-    
-    if (targetScreen !== 'mainScreen') {
-        // Show transition animation for 3 seconds
-        showTransitionAnimation(() => {
-            switchToScreen(targetScreen);
-        });
-    } else {
-        switchToScreen(targetScreen);
-    }
 }
 
 // Switch screen function
@@ -80,7 +71,7 @@ function showTransitionAnimation(callback) {
         transitionScreen.classList.add('hidden');
         transitionAnimation.pause();
         callback();
-    }, 000);
+    }, 1000);
 }
 
 // Play click sound (simulated with Web Audio API)
