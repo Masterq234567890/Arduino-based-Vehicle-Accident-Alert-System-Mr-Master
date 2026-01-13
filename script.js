@@ -69,8 +69,8 @@ function switchToScreen(targetScreen) {
 
 // Show transition animation
 function showTransitionAnimation(callback) {
-    //const transitionScreen = document.getElementById('transitionScreen');
-    //const transitionAnimation = document.getElementById('transitionAnimation');
+    const transitionScreen = document.getElementById('transitionScreen');
+    const transitionAnimation = document.getElementById('transitionAnimation');
     
     transitionScreen.classList.remove('hidden');
     transitionAnimation.currentTime = 0;
