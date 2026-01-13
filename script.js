@@ -43,7 +43,7 @@ function navigateToScreen(targetScreen) {
     if (targetScreen !== 'mainScreen') {
         // Show transition animation for 3 seconds
         showTransitionAnimation(() => {
-            switchToScreen(targetScreen);
+                    switchToScreen(targetScreen);
         });
     } else {
         switchToScreen(targetScreen);
@@ -62,15 +62,15 @@ function switchToScreen(targetScreen) {
     // Add active class to target screen
     setTimeout(() => {
         targetScreenElement.classList.add('active');
-    }, 00);
+    }, 100);
     
     currentScreen = targetScreen;
 }
 
 // Show transition animation
 function showTransitionAnimation(callback) {
-    const transitionScreen = document.getElementById('transitionScreen');
-    const transitionAnimation = document.getElementById('transitionAnimation');
+    //const transitionScreen = document.getElementById('transitionScreen');
+    //const transitionAnimation = document.getElementById('transitionAnimation');
     
     transitionScreen.classList.remove('hidden');
     transitionAnimation.currentTime = 0;
