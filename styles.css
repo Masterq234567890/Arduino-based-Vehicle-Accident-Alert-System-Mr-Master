@@ -528,7 +528,7 @@ body {
 
     transition: left 0.6s cubic-bezier(0.25, 0.8, 0.4, 1);
     display: flex;
-    justify-content: top;
+    justify-content: center top;
     align-items: top;
 }
 
